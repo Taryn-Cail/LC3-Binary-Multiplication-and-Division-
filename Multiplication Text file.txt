@@ -1,0 +1,42 @@
+;********************************************************
+; Binary Multiplication
+;
+; @author - Taryn Cail
+; @version - 1.0
+; @date - February 5th, 2025
+;
+; Purpose: To multiply two numbers in binary, regardless
+;          if they're positive, negative or both.
+;********************************************************
+
+0011 0000 0000 0000 ;   Start at x3000
+
+0101 010 010 1 00000 ;  Clear R2
+
+0010 000 000001111;     Load x into R0 (PC offset +13)
+0010 001 000001111;     Load y into R1 (PC offset +13)
+
+0000 011 000000011 ;    Branch to line 27 if R1 (y) is positive or zero
+
+; Perform Multiplication for negative numbers
+0001 010 010 000 000 ;  Add x to R2
+0001 001 001 1 00001 ;  Increment R1
+0000 111 111111100 ;    Always branch up to line 19
+
+; Perform Multiplication for positive numbers
+0000 010 000000011 ;    Branch to line 32 if y == 0, branch over
+0001 010 010 000 000 ;  Add R0(x) + R2(sum) into R2
+0001 001 001 1 11111 ;  Decrement R1(y)
+0000 111 111111100 ;    Always branch up to line 27
+
+0010 001 000000110;     Load y into R1 again
+0000 011 000000010;     If CC is positive or zero branch to line 39
+
+; Perform 2's Complement on the answer if it is supposed to be negative
+1001 010 010 111111 ;   Not R2(sum)
+0001 010 010 1 00001 ;  Add 1
+
+0011 010 000000011 ;    Store R2 after program
+1111 0000 0010 0101 ;   Trap x25
+0000 0000 0000 0010 ;   x = 2
+0000 0000 0000 0011;    y = 3
